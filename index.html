@@ -14,11 +14,12 @@
   <header class="hero" id="top">
     <div class="hero__inner">
       <p class="eyebrow">Zain Khan · Informatics (Data Science) @ University of Washington</p>
-      <h1 class="hero__title">AI systems-minded builder focused on human-centered, ethical technology.</h1>
+      <h1 class="hero__title">I build AI systems that turn messy ops data into fast, reliable decisions.</h1>
       <p class="hero__lede">
-        Informatics student and software engineer shaping agentic AI tools, Retrieval Augmented Generation systems,
-        and full stack experiences. Hands-on with AI NIC clusters, vector databases, and production-grade services.
+        Informatics student and software engineer building RAG and full stack tooling for real operator workflows.
+        Hands-on with AI NIC clusters, telemetry pipelines, and production-grade services.
       </p>
+      <p class="hero__cred">Previously: AMD AI NIC reliability and Cisco full stack engineering.</p>
       <div class="hero__actions">
         <a class="button" href="#projects">View projects</a>
         <a class="button button--ghost" href="#contact">Get in touch</a>
@@ -54,26 +55,42 @@
           <p class="card__body">
             Built an agentic workflow that pairs Retrieval Augmented Generation with supervised fine tuning to diagnose
             AI NIC cluster issues. Designed retrieval over telemetry and logs, orchestrated tool use, and delivered faster
-            root-cause analysis. Learned to align model behavior with operator intent and keep humans in control.
+            root-cause analysis.
           </p>
+          <p class="card__metric">Outcome: cut triage from hours to targeted root-cause candidates in minutes.</p>
+          <p class="card__stack">Stack: Python, FastAPI, Qdrant, Docker</p>
+          <div class="card__links">
+            <a href="case-studies/ai-nic-rag.html">Read case study</a>
+            <a href="https://github.com/zainkhanh1892" target="_blank" rel="noreferrer">Code</a>
+          </div>
         </article>
         <article class="card">
           <div class="card__meta">Full Stack · React · Node.js</div>
           <h3>Network Operations Demo Applications</h3>
           <p class="card__body">
             Delivered React and Node.js demos that visualize network health and automate operations. Owned API design,
-            data flows, and UX for quick operator triage. Learned to ship resilient UIs backed by observability and
-            consistent REST contracts.
+            data flows, and UX for quick operator triage.
           </p>
+          <p class="card__metric">Outcome: reduced timeout and retry issues by limiting concurrency and caching API responses.</p>
+          <p class="card__stack">Stack: React, Node.js, Express, REST APIs</p>
+          <div class="card__links">
+            <a href="case-studies/network-ops-demos.html">Read case study</a>
+            <a href="https://github.com/zainkhanh1892" target="_blank" rel="noreferrer">Demo code</a>
+          </div>
         </article>
         <article class="card">
-          <div class="card__meta">Algorithms · Data · Python &amp; Java</div>
-          <h3>Data Analysis &amp; Algorithmic Projects</h3>
+          <div class="card__meta">Security Ops · RAG · Alerting</div>
+          <h3>AI Enabled SOC Engine for Alert Triage</h3>
           <p class="card__body">
-            Explored predictive modeling, algorithm design, and data processing in Python and Java. Tackled end-to-end
-            pipelines from cleaning to evaluation. Learned to balance model performance with interpretability and
-            reproducible workflows.
+            Built a project-scoped retrieval system over logs, telemetry, Jira issues, and attachments to summarize incidents
+            and rank likely causes for analysts.
           </p>
+          <p class="card__metric">Outcome: scaled ingestion to 2,000+ issues while keeping retrieval latency stable.</p>
+          <p class="card__stack">Stack: Python, Qdrant, LangChain, PostgreSQL</p>
+          <div class="card__links">
+            <a href="case-studies/soc-engine-rag.html">Read case study</a>
+            <a href="https://github.com/zainkhanh1892" target="_blank" rel="noreferrer">Code</a>
+          </div>
         </article>
       </div>
     </section>
@@ -94,7 +111,7 @@
         </div>
         <div>
           <h4>Practices</h4>
-          <p>GitHub, UI/UX design, predictive modeling, collaboration</p>
+          <p>RAG pipeline design, chunking and evaluation, async ingestion, rate limiting, observability workflows</p>
         </div>
       </div>
     </section>
@@ -108,19 +125,20 @@
         <div class="timeline__item">
           <div class="timeline__meta">AMD · Internship</div>
           <h3>AI Systems &amp; Reliability</h3>
-          <p>
-            Built tooling to debug AI NIC clusters with RAG-powered triage and operator-in-the-loop checks. Improved
-            signal routing and surfaced actionable insights, reducing time-to-diagnosis for on-call engineers.
-          </p>
+          <ul>
+            <li>Built a RAG triage tool over logs and telemetry for AI NIC clusters to surface likely root causes.</li>
+            <li>Designed operator checks and handoff points so humans remained in control during diagnosis.</li>
+            <li>Improved time to diagnosis from broad manual searches to focused candidate paths in minutes.</li>
+          </ul>
         </div>
         <div class="timeline__item">
           <div class="timeline__meta">Cisco Systems · Internship</div>
           <h3>Full Stack Engineering</h3>
-          <p>
-            Developed network operations demos across React and Node.js, integrating REST APIs and observability data.
-            Streamlined workflows for operators and advocated for ethical, human-centered system behavior in product
-            decisions.
-          </p>
+          <ul>
+            <li>Shipped React and Node.js demos for network operations workflows and fast triage views.</li>
+            <li>Owned API contracts and UI flows connecting telemetry inputs to actionable dashboards.</li>
+            <li>Improved operator efficiency by reducing context switching across tools and alert surfaces.</li>
+          </ul>
         </div>
       </div>
     </section>
