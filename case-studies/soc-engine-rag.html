@@ -1,16 +1,614 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Case Study | AI Enabled SOC Engine for Alert Triage</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Case Study | AI-Enabled SOC Alert Triage System</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --border:    #21262d;
+      --text:      #e6edf3;
+      --muted:     #8b949e;
+      --accent:    #388bfd;
+      --tag-sec:   #58a6ff;
+      --tag-bg:    rgba(56, 139, 253, 0.1);
+      --green:     #3fb950;
+      --green-bg:  rgba(63, 185, 80, 0.1);
+      --red:       #f85149;
+      --red-bg:    rgba(248, 81, 73, 0.1);
+      --radius:    10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav .logo {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    nav .back {
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    nav .back:hover { color: var(--text); text-decoration: none; }
+
+    /* ── HERO ── */
+    .hero {
+      border-bottom: 1px solid var(--border);
+      padding: 3.5rem 2rem 3rem;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .tag-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+    .tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 0.25rem 0.65rem;
+      border-radius: 100px;
+      color: var(--tag-sec);
+      background: var(--tag-bg);
+      border: 1px solid rgba(56, 139, 253, 0.25);
+    }
+    .tag.in-progress {
+      color: #e3b341;
+      background: rgba(227, 179, 65, 0.1);
+      border-color: rgba(227, 179, 65, 0.25);
+    }
+    .hero h1 {
+      font-size: clamp(1.75rem, 3.5vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 0.85rem;
+    }
+    .hero .sub {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 600px;
+      margin-bottom: 2rem;
+    }
+    .meta-row {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .meta-item .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+    .meta-item .value {
+      font-size: 0.875rem;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* ── CONTENT ── */
+    .content {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    /* ── SECTION ── */
+    .section {
+      margin-top: 3rem;
+      padding-top: 3rem;
+      border-top: 1px solid var(--border);
+    }
+    .section:first-child { border-top: none; }
+    .section-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    .section h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    .section p {
+      color: #c9d1d9;
+      font-size: 0.9rem;
+      margin-bottom: 0.8rem;
+      max-width: 700px;
+    }
+
+    /* ── STAT CARDS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+    @media (max-width: 580px) { .stats-grid { grid-template-columns: 1fr; } }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1rem 0.9rem;
+      text-align: center;
+    }
+    .stat-card .number {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+    .stat-card .caption {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+      line-height: 1.35;
+    }
+
+    /* ── CONCEPT TABLE ── */
+    .concept-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.1rem;
+      font-size: 0.875rem;
+    }
+    .concept-table th {
+      text-align: left;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      padding: 0.55rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .concept-table td {
+      padding: 0.85rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      color: #c9d1d9;
+      font-size: 0.875rem;
+    }
+    .concept-table td:first-child {
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      padding-right: 1.25rem;
+    }
+    .concept-table tr:last-child td { border-bottom: none; }
+
+    /* ── PIPELINE ── */
+    .pipeline {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: 1.25rem 0;
+      overflow-x: auto;
+      padding-bottom: 0.4rem;
+    }
+    .pipeline-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      text-align: center;
+      min-width: 110px;
+      flex-shrink: 0;
+    }
+    .pipeline-step .step-num {
+      display: block;
+      font-size: 0.62rem;
+      font-weight: 400;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.2rem;
+    }
+    .pipeline-arrow {
+      color: var(--muted);
+      padding: 0 0.35rem;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    /* ── BEFORE / AFTER ── */
+    .before-after {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+    @media (max-width: 520px) { .before-after { grid-template-columns: 1fr; } }
+    .ba-card {
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+    .ba-card.before { background: var(--red-bg); border: 1px solid rgba(248,81,73,0.25); }
+    .ba-card.after  { background: var(--green-bg); border: 1px solid rgba(63,185,80,0.25); }
+    .ba-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+    .ba-card.before .ba-label { color: var(--red); }
+    .ba-card.after  .ba-label { color: var(--green); }
+    .ba-metric {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.3rem;
+    }
+    .ba-card.before .ba-metric { color: var(--red); }
+    .ba-card.after  .ba-metric { color: var(--green); }
+    .ba-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
+
+    /* ── CONTRIB GRID ── */
+    .contrib-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 1.1rem;
+    }
+    @media (max-width: 520px) { .contrib-grid { grid-template-columns: 1fr; } }
+    .contrib-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .contrib-card .icon { font-size: 1.2rem; margin-bottom: 0.4rem; }
+    .contrib-card h4 {
+      font-size: 0.875rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      color: var(--text);
+    }
+    .contrib-card p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    /* ── TAKEAWAYS ── */
+    .takeaway-list {
+      list-style: none;
+      margin-top: 1rem;
+    }
+    .takeaway-list li {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.8rem;
+      font-size: 0.875rem;
+      color: #c9d1d9;
+      align-items: flex-start;
+    }
+    .takeaway-list li .num {
+      min-width: 20px;
+      height: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── NEXT STEPS ── */
+    .next-steps { margin-top: 1.1rem; display: flex; flex-direction: column; gap: 0.65rem; }
+    .next-step {
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.9rem 1rem;
+    }
+    .ns-num {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(56,139,253,0.1);
+      border: 1px solid rgba(56,139,253,0.2);
+      border-radius: 5px;
+      padding: 0.15rem 0.5rem;
+      white-space: nowrap;
+      margin-top: 1px;
+    }
+    .next-step h4 {
+      font-size: 0.875rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+      color: var(--text);
+    }
+    .next-step p { font-size: 0.8rem; color: var(--muted); margin: 0; }
+
+    /* ── QUOTE ── */
+    blockquote {
+      border-left: 3px solid var(--border);
+      padding: 0.75rem 1.1rem;
+      margin: 1.25rem 0;
+      color: var(--muted);
+      font-style: italic;
+      font-size: 0.9rem;
+      background: var(--surface);
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      max-width: 860px;
+      margin: 0 auto;
+    }
+  </style>
 </head>
 <body>
-  <main>
-    <h1>AI Enabled SOC Engine for Alert Triage</h1>
-    <p>Built project-scoped retrieval over logs, telemetry, Jira issues, and attachments for analyst triage.</p>
-    <p>Outcome: scaled ingestion to 2,000+ issues while keeping retrieval latency stable.</p>
-    <p><a href="../index.html#projects">Back to projects</a></p>
-  </main>
+
+<nav>
+  <span class="logo">Zain Khan</span>
+  <a class="back" href="../index.html">← Back to projects</a>
+</nav>
+
+<div class="hero">
+  <div class="tag-row">
+    <span class="tag">Security Ops · RAG · Alerting</span>
+    <span class="tag in-progress">In Progress · Spring 2026</span>
+  </div>
+  <h1>AI-Enabled SOC Alert Triage System</h1>
+  <p class="sub">Automating the repetitive, so analysts can focus on the critical. Built for Crest Data Systems as a senior Capstone project.</p>
+  <div class="meta-row">
+    <div class="meta-item">
+      <div class="label">Sponsor</div>
+      <div class="value">Crest Data Systems</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Team</div>
+      <div class="value">Group D-10: Touse (5 members)</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Stack</div>
+      <div class="value">Python · GPT-4o · MCP · Jira API · VirusTotal</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">My Role</div>
+      <div class="value">Pipeline Engineering + Research Lead</div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- PROBLEM -->
+  <div class="section">
+    <div class="section-label">01 — Problem</div>
+    <h2>SOC Analysts Are Drowning in Alerts</h2>
+    <p>Security Operations Centers are facing an alert overload crisis. Analysts at Crest Data receive hundreds of malsite alerts daily, each requiring them to manually copy domains between systems, query threat intelligence APIs, write documentation, and update tickets — the same mechanical process, hundreds of times per shift.</p>
+    <blockquote>"I spend a good chunk of my day triaging malsite alerts. By the time I finish, there's no time left for actual threat hunting." — Crest Data SOC Analyst</blockquote>
+    <p>The real cost isn't just wasted time — it's sophisticated threats slipping through while analysts are buried in routine work. Decision quality also varies by analyst and by shift, creating inconsistency the team can't audit or fix.</p>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="number">300+</div>
+        <div class="caption">Malsite alerts arriving daily for manual triage</div>
+      </div>
+      <div class="stat-card">
+        <div class="number">10–15</div>
+        <div class="caption">Minutes per alert for manual investigation</div>
+      </div>
+      <div class="stat-card">
+        <div class="number">15–25h</div>
+        <div class="caption">Daily team hours spent on repetitive triage alone</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GOALS -->
+  <div class="section">
+    <div class="section-label">02 — Goals</div>
+    <h2>What We Set Out to Build</h2>
+    <p>Our MVP target was a fully automated triage pipeline that handles the end-to-end alert workflow — from detecting a new Jira ticket to posting a structured verdict — without any analyst intervention for clear-cut cases.</p>
+    <p>We also required the system to be <strong>explainable</strong> (analysts see the reasoning behind every verdict), <strong>modular</strong> (swap any component without rebuilding), and <strong>trustworthy</strong> (confidence scores guide human judgment rather than replace it).</p>
+    <table class="concept-table">
+      <thead>
+        <tr><th>Key Concept</th><th>Why It Matters</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>MCP Server Architecture</td>
+          <td>Open standard protocol connects Jira, VirusTotal, and the LLM without hardcoding integrations — swap any component without rebuilding the system.</td>
+        </tr>
+        <tr>
+          <td>LLM Classification (GPT-4o)</td>
+          <td>AI understands context like an analyst instead of following rigid rules, catching edge cases that pattern matching misses.</td>
+        </tr>
+        <tr>
+          <td>VirusTotal Enrichment</td>
+          <td>Detection ratio, reputation score, and threat categories give the LLM structured signal — replacing the manual lookup step entirely.</td>
+        </tr>
+        <tr>
+          <td>Explainable Verdicts + Fallback</td>
+          <td>Confidence scores and natural-language reasoning build analyst trust. Rule-based sanity checks keep things running when the LLM hits edge cases.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PROCESS -->
+  <div class="section">
+    <div class="section-label">03 — Process</div>
+    <h2>How We Built It — Team Perspective</h2>
+    <p>As a team, we followed a research-first approach — interviewing SOC analysts at Crest Data, mapping the existing workflow step by step, and validating assumptions before writing a line of code. A key pivot came from stakeholder feedback: our initial Jira output format fell flat with analysts, so we restructured it to verdict-first, then recommended actions, then supporting evidence.</p>
+    <p>We validated continuously against real Crest Data malsite alerts — enriching 15+ live indicators, comparing AI verdicts to known analyst decisions, and achieving over 85% accuracy. Reputation weighting and a data freshness flag were added per analyst feedback mid-build.</p>
+
+    <div class="pipeline">
+      <div class="pipeline-step"><span class="step-num">Step 1</span>Alert Retrieval</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step"><span class="step-num">Step 2</span>Indicator Extraction</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step"><span class="step-num">Step 3</span>Threat Enrichment</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step"><span class="step-num">Step 4</span>AI Analysis</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step"><span class="step-num">Step 5</span>Summary to Jira</div>
+    </div>
+
+    <div class="before-after">
+      <div class="ba-card before">
+        <div class="ba-label">Before</div>
+        <div class="ba-metric">10–15 min</div>
+        <div class="ba-desc">Open Jira → copy domain → open VirusTotal → read reports → write notes → update ticket → repeat 300×</div>
+      </div>
+      <div class="ba-card after">
+        <div class="ba-label">After</div>
+        <div class="ba-metric">&lt; 30 sec</div>
+        <div class="ba-desc">Run one command → system handles everything → structured triage report auto-posted to Jira with verdict, actions, and evidence</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY CONTRIBUTIONS -->
+  <div class="section">
+    <div class="section-label">04 — Individual Contributions</div>
+    <h2>What I Specifically Built</h2>
+    <p>While all five of us collaborated on research, validation, and presentations, I owned the core technical pipeline components and led the research synthesis for our winter MVP presentation.</p>
+    <div class="contrib-grid">
+      <div class="contrib-card">
+        <div class="icon">🔌</div>
+        <h4>Jira MCP Server</h4>
+        <p>Built the MCP-compliant server that monitors Jira for new malsite alerts and retrieves all relevant ticket metadata — the entry point of the entire pipeline.</p>
+      </div>
+      <div class="contrib-card">
+        <div class="icon">🔍</div>
+        <h4>VirusTotal Enrichment</h4>
+        <p>Implemented the enrichment layer querying VirusTotal's API for detection ratios, reputation scores, and threat categories, structured as clean signal for the LLM.</p>
+      </div>
+      <div class="contrib-card">
+        <div class="icon">🤖</div>
+        <h4>LLM Prompting & Classification</h4>
+        <p>Designed and iterated GPT-4o prompts that produce Benign / Suspicious / Malicious verdicts with confidence levels and natural-language explanations. Added sanity checks for edge cases.</p>
+      </div>
+      <div class="contrib-card">
+        <div class="icon">📊</div>
+        <h4>Research & Presentation Lead</h4>
+        <p>Led the MVP presentation for winter quarter — including competitive research, persona development, and synthesizing analyst interview findings into the final slide deck.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAKEAWAYS -->
+  <div class="section">
+    <div class="section-label">05 — Takeaways</div>
+    <h2>What I've Learned So Far</h2>
+    <ul class="takeaway-list">
+      <li>
+        <span class="num">1</span>
+        <span><strong>Prompt design is real engineering.</strong> Writing prompts that produce consistent, structured, edge-case-safe outputs from GPT-4o took far more iteration than expected. Small wording changes had large effects on classification accuracy.</span>
+      </li>
+      <li>
+        <span class="num">2</span>
+        <span><strong>MCP is a genuinely powerful integration pattern.</strong> Modular servers communicating over a standard protocol meant we could swap VirusTotal for another threat intel source — or Jira for ServiceNow — without touching the core pipeline.</span>
+      </li>
+      <li>
+        <span class="num">3</span>
+        <span><strong>Stakeholder feedback changes everything.</strong> Our first output format felt complete to us but fell flat with analysts. Restructuring to verdict-first came directly from watching users scan the output — a reminder that user research doesn't stop after discovery.</span>
+      </li>
+      <li>
+        <span class="num">4</span>
+        <span><strong>Ethical AI in enterprise contexts requires upfront design decisions.</strong> Confidence scores, fallback rules, and audit trails weren't afterthoughts — they were what made the system safe enough for a real SOC to actually use.</span>
+      </li>
+      <li>
+        <span class="num">5</span>
+        <span><strong>Real client data is different from toy datasets.</strong> Live Jira tickets and VirusTotal results from actual malsite alerts introduced edge cases no academic dataset would have prepared me for.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- NEXT STEPS -->
+  <div class="section">
+    <div class="section-label">06 — Next Steps</div>
+    <h2>Spring Quarter Roadmap</h2>
+    <p>The pipeline is functional for malsite domain triage. Here's what we're building toward a production-ready system:</p>
+    <div class="next-steps">
+      <div class="next-step">
+        <div class="ns-num">01</div>
+        <div>
+          <h4>Extend Verdict Categories</h4>
+          <p>Add support for threat types beyond malsite domains — data loss prevention alerts, insider threat scenarios, and more.</p>
+        </div>
+      </div>
+      <div class="next-step">
+        <div class="ns-num">02</div>
+        <div>
+          <h4>Build a Metrics Dashboard</h4>
+          <p>Visualization layer for SOC managers showing triage speed, classification distribution, time savings, and accuracy trends over time.</p>
+        </div>
+      </div>
+      <div class="next-step">
+        <div class="ns-num">03</div>
+        <div>
+          <h4>Expand Testing Scope</h4>
+          <p>Move beyond VirusTotal domain comparison to validate accuracy across additional threat intelligence sources and alert types.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Zain Khan · <a href="mailto:zhk2@uw.edu">zhk2@uw.edu</a> · <a href="../index.html">← Back to projects</a>
+</footer>
+
 </body>
 </html>
