@@ -4,16 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zain Khan | Portfolio</title>
+  <meta name="description" content="Zain Khan — Informatics (Data Science) student at UW building AI systems, RAG pipelines, and full stack tooling for real operator workflows.">
+  <meta property="og:title" content="Zain Khan | Portfolio">
+  <meta property="og:description" content="AI systems engineer building RAG and full stack tooling for real operator workflows. Previously AMD and Cisco.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="ZAIN KHAN copy.png">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2338bdf8'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='sans-serif' font-weight='700' font-size='16' fill='%230f172a'>ZK</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="grain"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <nav class="nav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="#top">ZK</a>
+      <div class="nav__links">
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#experience">Experience</a>
+        <a href="#contact">Contact</a>
+        <a href="Zain_Khan_Resume_One_Page.pdf" target="_blank" rel="noreferrer" class="nav__resume">Resume</a>
+      </div>
+    </div>
+  </nav>
+
   <header class="hero" id="top">
     <div class="hero__inner">
-      <p class="eyebrow">Zain Khan · Informatics (Data Science) @ University of Washington</p>
+      <div class="hero__avatar">
+        <img src="ZAIN KHAN copy.png" alt="Zain Khan">
+      </div>
+      <p class="eyebrow">Zain Khan · Informatics (Data Science) @ University of Washington · Expected June 2026</p>
       <h1 class="hero__title">I build AI systems that turn messy ops data into fast, reliable decisions.</h1>
       <p class="hero__lede">
         Informatics student and software engineer building RAG and full stack tooling for real operator workflows.
@@ -23,6 +47,7 @@
       <div class="hero__actions">
         <a class="button" href="#projects">View projects</a>
         <a class="button button--ghost" href="#contact">Get in touch</a>
+        <a class="button button--ghost" href="Zain_Khan_Resume_One_Page.pdf" target="_blank" rel="noreferrer">Download Resume</a>
       </div>
     </div>
   </header>
@@ -53,11 +78,9 @@
           <div class="card__meta">AI Systems · RAG · SFT</div>
           <h3>Agentic AI for AI NIC Cluster Debugging</h3>
           <p class="card__body">
-            Built an agentic workflow that pairs Retrieval Augmented Generation with supervised fine tuning to diagnose
-            AI NIC cluster issues. Designed retrieval over telemetry and logs, orchestrated tool use, and delivered faster
-            root-cause analysis.
+            AI NIC cluster failures generate thousands of log lines with no clear signal. The hard part was deciding what to retrieve — too broad and the LLM hallucinates, too narrow and it misses the cause. I built a retrieval pipeline over telemetry and logs with supervised fine tuning to teach the model what a meaningful failure pattern looks like, then orchestrated tool use to let it reason across multiple sources before surfacing candidates.
           </p>
-          <p class="card__metric">Outcome: cut triage from hours to targeted root-cause candidates in minutes.</p>
+          <p class="card__metric">Outcome: cut triage from ~4 hours of manual log searching to targeted root-cause candidates in under 10 minutes.</p>
           <p class="card__stack">Stack: Python, FastAPI, Qdrant, Docker</p>
           <div class="card__links">
             <a href="case-studies/ai-nic-rag.html">Read case study</a>
@@ -68,10 +91,9 @@
           <div class="card__meta">Full Stack · React · Node.js</div>
           <h3>Network Operations Demo Applications</h3>
           <p class="card__body">
-            Delivered React and Node.js demos that visualize network health and automate operations. Owned API design,
-            data flows, and UX for quick operator triage.
+            The challenge was that the underlying network APIs were rate-limited and slow — naively fetching everything on load caused cascading timeouts that made the UI feel broken. I redesigned the data layer to limit concurrent requests, cache responses, and degrade gracefully when endpoints were unavailable, then built the React views around that contract.
           </p>
-          <p class="card__metric">Outcome: reduced timeout and retry issues by limiting concurrency and caching API responses.</p>
+          <p class="card__metric">Outcome: eliminated timeout failures and cut load errors by caching API responses and limiting concurrency.</p>
           <p class="card__stack">Stack: React, Node.js, Express, REST APIs</p>
           <div class="card__links">
             <a href="case-studies/network-ops-demos.html">Read case study</a>
@@ -82,14 +104,25 @@
           <div class="card__meta">Security Ops · RAG · Alerting</div>
           <h3>AI Enabled SOC Engine for Alert Triage</h3>
           <p class="card__body">
-            Built a project-scoped retrieval system over logs, telemetry, Jira issues, and attachments to summarize incidents
-            and rank likely causes for analysts.
+            SOC analysts were spending the first 20 minutes of every alert just reading through Jira history and attachments to build context. The ingestion problem was the trickiest part — Jira attachments, comments, and linked issues all needed different chunking strategies to stay retrievable. I built a project-scoped pipeline that ingests heterogeneous sources and surfaces ranked incident summaries in seconds.
           </p>
-          <p class="card__metric">Outcome: scaled ingestion to 2,000+ issues while keeping retrieval latency stable.</p>
+          <p class="card__metric">Outcome: scaled ingestion to 2,000+ issues with consistent retrieval latency under 2 seconds.</p>
           <p class="card__stack">Stack: Python, Qdrant, LangChain, PostgreSQL</p>
           <div class="card__links">
             <a href="case-studies/soc-engine-rag.html">Read case study</a>
             <a href="https://github.com/zainkhanh1892" target="_blank" rel="noreferrer">Code</a>
+          </div>
+        </article>
+        <article class="card card--featured">
+          <div class="card__meta">Security Ops · Agentic AI · MCP</div>
+          <h3>AI SOC Capstone — Automated Alert Triage</h3>
+          <p class="card__body">
+            Manual SOC alert triage is repetitive and slow — an analyst pulls a Jira ticket, looks up the indicator on VirusTotal, makes a call, and writes it up. I automated that entire loop: GPT-4o orchestrates tool calls to fetch the alert, enrich it, classify the threat, and post a structured verdict back to Jira with no human in the loop. The tricky part was making the LLM verdict trustworthy — sanity checks override GPT when its classification contradicts raw detection counts.
+          </p>
+          <p class="card__metric">Outcome: end-to-end triage in under 60 seconds with full audit history and a React dashboard for analysts.</p>
+          <p class="card__stack">Stack: Python, FastAPI, OpenAI, SQLite, React, Vite, Tailwind</p>
+          <div class="card__links">
+            <a href="https://github.com/ashsesh/AI-SOC-Capstone" target="_blank" rel="noreferrer">Code</a>
           </div>
         </article>
       </div>
@@ -103,15 +136,19 @@
       <div class="panel skills">
         <div>
           <h4>Languages &amp; Data</h4>
-          <p>Python, Java, SQL, JavaScript</p>
+          <p>Python, Java, SQL, JavaScript, TypeScript</p>
         </div>
         <div>
           <h4>Frameworks &amp; Systems</h4>
-          <p>React, Node.js, REST APIs, Docker, vector databases</p>
+          <p>React, Node.js, FastAPI, REST APIs, Docker, Vite, Tailwind CSS</p>
+        </div>
+        <div>
+          <h4>AI &amp; Data</h4>
+          <p>OpenAI API, LangChain, Qdrant, vector databases, RAG pipeline design, supervised fine tuning</p>
         </div>
         <div>
           <h4>Practices</h4>
-          <p>RAG pipeline design, chunking and evaluation, async ingestion, rate limiting, observability workflows</p>
+          <p>Async ingestion, rate limiting, observability workflows, chunking and evaluation, agentic tool use</p>
         </div>
       </div>
     </section>
@@ -123,7 +160,7 @@
       </div>
       <div class="timeline">
         <div class="timeline__item">
-          <div class="timeline__meta">AMD · Internship</div>
+          <div class="timeline__meta">AMD · Internship · June – August 2024</div>
           <h3>AI Systems &amp; Reliability</h3>
           <ul>
             <li>Built a RAG triage tool over logs and telemetry for AI NIC clusters to surface likely root causes.</li>
@@ -132,7 +169,7 @@
           </ul>
         </div>
         <div class="timeline__item">
-          <div class="timeline__meta">Cisco Systems · Internship</div>
+          <div class="timeline__meta">Cisco Systems · Internship · June – August 2023</div>
           <h3>Full Stack Engineering</h3>
           <ul>
             <li>Shipped React and Node.js demos for network operations workflows and fast triage views.</li>
@@ -146,11 +183,12 @@
     <section class="section" id="contact">
       <div class="section__header">
         <h2>Contact</h2>
-        <p>Let’s connect about internships, entry-level roles, or collaborations.</p>
+        <p>Let's connect about internships, entry-level roles, or collaborations.</p>
       </div>
       <div class="panel contact">
+        <a href="mailto:khanzainh@gmail.com" class="contact__link">khanzainh@gmail.com</a>
         <a href="mailto:zhk2@uw.edu" class="contact__link">zhk2@uw.edu</a>
-        <a href="https://linkedin.com/in/zain-khan-049b22222" class="contact__link" target="_blank" rel="noreferrer">LinkedIn</a>
+        <a href="https://linkedin.com/in/zain-khan-049b22222" class="contact__link" target="_blank" rel="noreferrer">linkedin.com/in/zainkhan</a>
         <a href="https://github.com/zainkhanh1892" class="contact__link" target="_blank" rel="noreferrer">GitHub</a>
       </div>
     </section>
